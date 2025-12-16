@@ -1,19 +1,35 @@
-# rspack-repro
+# rspack-panic-code-gen-results-repro
 
-- [Rspack website](https://rspack.dev/)
-- [Rspack repo](https://github.com/web-infra-dev/rspack)
+Minimal reproduction for a Rspack runtime panic introduced in `@rspack/core >= 1.6.6`, observed during build when **Module Federation** and **SRI** are enabled.
 
-A GitHub template for creating a Rspack minimal reproducible example.
+## Summary
 
-webpack is included for comparing the outputs.
+When building this project with `@rspack/core` **v1.6.6 or higher**, the build may crash with a runtime panic similar to:
 
-## Usages
+```
+Panic occurred at runtime. Please file an issue on GitHub with the backtrace below: https://github.com/web-infra-dev/rspack/issues: panicked at crates/rspack_core/src/artifacts/code_generation_results.rs:255:13:
+No unique code generation entry for unspecified runtime for <project_path>/node_modules/mime-types/index.js 
+```
 
-`pnpm run build` would both run Rspack and webpack with config `./rspack.config.mjs`
+## How to reproduce
 
-- Rspack will emits output in `./rspack-dist`
-- webpack will emits output in `./webpack-dist`
+1. Build the app with `pnpm run build:rsbuild`, and you can find the error occurs.
+2. You can see there is no issue after lower `@rspack/core`'s version to `v1.6.5` by update `resolutions` field on `package.json`.
+3. Reset all version modification and turn `security.sri.enable` to `false` at `rsbuild.config.ts`, you can see the issue gone.
+4. Reset all config modification and comment out `pluginModuleFederation` usage at `rsbuild.config.ts`, you can see the issue gone.
 
-`./webpack-dist` and `./rspack-dist` are purposely not added to `.gitignore`.
+## Suspected trigger
 
-It is recommended to commit these files so we quickly compare the outputs.
+Based on the experiments above, the crash seems to require all of:
+- `@rspack/core >= 1.6.6`
+- Module Federation enabled (via `@module-federation/rsbuild-plugin`)
+- `security.sri.enable: true`
+
+### Behavior matrix
+
+| `@rspack/core` | Module Federation | `security.sri.enable` | Result |
+| --- | --- | --- | --- |
+| <= 1.6.5 | yes | yes | OK |
+| >= 1.6.6 | yes | yes | Panic |
+| >= 1.6.6 | yes | no | OK |
+| >= 1.6.6 | no | yes | OK |

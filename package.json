@@ -14,15 +14,24 @@
   },
   "dependencies": {
     "@rspack/cli": "^1.6.0",
-    "@rspack/core": "^1.6.0",
+    "@rspack/core": "^1.6.6",
     "html-webpack-plugin": "^5.6.4",
     "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1"
   },
   "devDependencies": {
-    "@rsbuild/core": "^1.6.1",
+    "@module-federation/enhanced": "~0.21.6",
+    "@module-federation/rsbuild-plugin": "~0.21.6",
+    "@rsbuild/core": "1.6.11",
+    "@rsbuild/plugin-node-polyfill": "^1.4.2",
+    "@types/mime-types": "^3.0.1",
     "cross-env": "^10.1.0",
-    "npm-run-all2": "^8.0.4"
+    "mime-types": "^3.0.2",
+    "npm-run-all2": "^8.0.4",
+    "typescript": "~5.9.3"
+  },
+  "resolutions": {
+    "@rspack/core": "^1.6.6"
   },
   "packageManager": "pnpm@10.20.0"
 }
